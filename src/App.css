@@ -24,6 +24,9 @@
         margin-top: 12rem;
         padding: 15px;
     }
+    .mealsCard_details{
+        margin: 15px;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 990px){
@@ -33,6 +36,9 @@
     .meals_card_main{
         margin-top: 10rem;
         padding: 15px;
+    }
+     .mealsCard_details{
+        margin: 15px;
     }
 }
 
