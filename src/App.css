@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+.fav_btn{
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #FC8019;
+    padding: 4px 6px;
+}
+
+.meals_card_main{
+    padding: 15px;
+}
+
+@media (max-width: 767px) {
+
+    .header_main{
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+    }
+
+    .meals_card_main{
+        margin-top: 12rem;
+        padding: 15px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 990px){
+    .header_main{
+        flex-direction: column;
+    }
+    .meals_card_main{
+        margin-top: 10rem;
+        padding: 15px;
+    }
+}
+
