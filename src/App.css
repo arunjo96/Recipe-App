@@ -12,6 +12,23 @@
     padding: 15px;
 }
 
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFF8F0; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #FC8019; 
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #E23744; 
+}
+
 @media (max-width: 767px) {
 
     .header_main{
@@ -21,11 +38,16 @@
     }
 
     .meals_card_main{
-        margin-top: 12rem;
+        margin-top: 15rem;
         padding: 15px;
     }
     .mealsCard_details{
         margin: 15px;
+    }
+
+    .filter_div{
+        flex-wrap: wrap;
+        justify-content: center;
     }
 }
 

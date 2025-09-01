@@ -1,14 +1,21 @@
+
+
 import { useState, useEffect } from "react";
-
-import { getCategories, searchMeals, filterCatergory } from "../Services/ServiceAPI";
+import {
+  getCategories,
+  getIngredients,
+  searchMeals,
+  filterCatergory,
+  filterByIngredient,
+} from "../Services/ServiceAPI";
 import { Link } from "react-router-dom";
-
-
 
 const Header = ({ setMeals }) => {
   const [search, setSearch] = useState("");
   const [mealsCategories, setMealsCategories] = useState([]);
+  const [ingredients, setIngredients] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedIngredient, setSelectedIngredient] = useState("");
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -20,26 +27,47 @@ const Header = ({ setMeals }) => {
         console.error("Error fetching categories:", error);
       }
     };
+
+    const fetchIngredients = async () => {
+      try {
+        const res = await getIngredients();
+        const ingredient = res.data.meals.map((i) => i.strIngredient);
+        setIngredients(ingredient);
+      } catch (error) {
+        console.error("Error fetching ingredients:", error);
+      }
+    };
+
     fetchCategories();
+    fetchIngredients();
   }, []);
 
   const fetchData = async () => {
     try {
+      let meals = [];
+
       if (selectedCategory) {
         const res = await filterCatergory(selectedCategory);
-        let meals = res.data.meals || [];
-
-      
-        if (search) {
-          meals = meals.filter((m) =>
-            m.strMeal.toLowerCase().includes(search.toLowerCase())
-          );
-        }
-        setMeals(meals);
-      } else {
-        const res = await searchMeals(search);
-        setMeals(res.data.meals || []);
+        meals = res.data.meals || [];
       }
+
+      if (selectedIngredient) {
+        const res = await filterByIngredient(selectedIngredient);
+        meals = res.data.meals || [];
+      }
+
+      if (!selectedCategory && !selectedIngredient) {
+        const res = await searchMeals(search);
+        meals = res.data.meals || [];
+      }
+
+      if (search && meals.length > 0) {
+        meals = meals.filter((m) =>
+          m.strMeal.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+
+      setMeals(meals);
     } catch (error) {
       console.error("Error fetching meals:", error);
     }
@@ -52,17 +80,26 @@ const Header = ({ setMeals }) => {
 
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
+    setSelectedIngredient("");
+    fetchData();
+  };
+
+  const handleIngredientChange = (value) => {
+    setSelectedIngredient(value);
+    setSelectedCategory(""); 
     fetchData();
   };
 
   useEffect(() => {
     fetchData();
-  }, [selectedCategory]);
+  }, [selectedCategory, selectedIngredient]);
 
   return (
     <div className="bg-[#FFF8F0] py-3 fixed w-full top-0 z-40 shadow-xs">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center header_main px-4 sm:justify-between gap-3">
-        <Link to="/" className="text-2xl font-bold text-[#E23744]">Recipe App</Link>
+        <Link to="/" className="text-2xl font-bold text-[#E23744]">
+          Recipe App
+        </Link>
 
         <form onSubmit={handleSearch} className="flex gap-3 sm:items-center">
           <input
@@ -80,7 +117,7 @@ const Header = ({ setMeals }) => {
           </button>
         </form>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 filter_div">
           <select
             value={selectedCategory}
             onChange={(e) => handleCategoryChange(e.target.value)}
@@ -94,6 +131,19 @@ const Header = ({ setMeals }) => {
             ))}
           </select>
 
+          <select
+            value={selectedIngredient}
+            onChange={(e) => handleIngredientChange(e.target.value)}
+            className="px-3 py-2 outline-none text-white rounded-lg cursor-pointer bg-[#FC8019] focus:ring-2 focus:ring-red-300"
+          >
+            <option value="">All Ingredients</option>
+            {ingredients.slice(0, 50).map((ing) => (
+              <option key={ing} value={ing}>
+                {ing}
+              </option>
+            ))}
+          </select>
+
           <Link
             to="/favorites"
             className="hover:underline hover:text-[#FC8019] text-gray-700 font-semibold"
@@ -103,8 +153,6 @@ const Header = ({ setMeals }) => {
         </div>
       </div>
     </div>
-
-
   );
 };
 
